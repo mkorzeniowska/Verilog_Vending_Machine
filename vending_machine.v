@@ -82,52 +82,50 @@ begin
        end
        current_state <= next_state;
        totalChange <= totalChange + change;
-end
 
-//**********************************************************************8******
-if (current_state != delivered_state)     //display inserted money
-begin
-    if (insertedMoney == 8'b00000000)
+    if (current_state != delivered_state)     //display inserted money
     begin
-    digit0 = 7'b0000001;   //0
-    digit1 = 7'b0000001;
+       if (insertedMoney == 8'b00000000)
+         begin
+           digit0 = 7'b0000001;   //0
+           digit1 = 7'b0000001;
+         end
+       else if (insertedMoney == 8'b00000001)  //1
+         begin
+           digit0 = 7'b1001111;
+           digit1 = 7'b1111110;             // -
+         end
+      else if (insertedMoney == 8'b00000010)    //2
+        begin
+           digit0 = 7'b0010010;
+           digit1 = 7'b0000001;
+        end
+      else if (insertedMoney == 8'b00000011)    //3
+        begin
+          digit0 = 7'b0000110;
+          digit1 = 7'b1111110;
+        end
+       else if (insertedMoney == 8'b00000100)    //4
+         begin
+           digit0 = 7'b1001100;
+           digit1 = 7'b1111110;
+         end
+       else if (insertedMoney == 8'b00000101)  //5
+         begin
+           digit0 = 7'b0100100;
+           digit1 = 7'b1111110;
+         end
+       else if (insertedMoney == 8'b00000110)   //6
+         begin
+           digit0 = 7'b1011111;
+           digit1 = 7'b1111110;
+         end
+       else if (insertedMoney == 8'b00000111)   //7
+         begin
+           digit0 = 7'b0001111;
+           digit1 = 7'b1111110;
+       end
     end
-    else if (insertedMoney == 8'b00000001)  //1
-    begin
-    digit0 = 7'b1001111;
-    digit1 = 7'b1111110;             // -
-    end
-    else if (insertedMoney == 8'b00000010)    //2
-    begin
-    digit0 = 7'b0010010;
-    digit1 = 7'b0000001;
-    end
-    else if (insertedMoney == 8'b00000011)    //3
-    begin
-    digit0 = 7'b0000110;
-    digit1 = 7'b1111110;
-    end
-    else if (insertedMoney == 8'b00000100)    //4
-    begin
-    digit0 = 7'b1001100;
-    digit1 = 7'b1111110;
-    end
-    else if (insertedMoney == 8'b00000101)  //5
-    begin
-    digit0 = 7'b0100100;
-    digit1 = 7'b1111110;
-    end
-    else if (insertedMoney == 8'b00000110)   //6
-    begin
-    digit0 = 7'b1011111;
-    digit1 = 7'b1111110;
-    end
-    else if (insertedMoney == 8'b00000111)   //7
-    begin
-    digit0 = 7'b0001111;
-    digit1 = 7'b1111110;
-    end
-end
 else begin                        //money refunded
    digit0 = 7'b1111110;
    digit1 = 7'b1111110;
@@ -162,6 +160,7 @@ else begin                        //money refunded
       digit3 = 7'b0100100;
       end
    end
+end
 end
 //***************************************************************************
 // next state and output combinational logics
