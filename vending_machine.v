@@ -26,7 +26,7 @@ module vending_machine(clk, reset, BTN1, BTN2, BTN3, Money_in, product1, product
 input clk;     //internal clock (50MHz)
 input reset;   //reset variable
 input BTN1, BTN2, BTN3;    
-input Money_in;
+input [2:0] Money_in;                    //3-bit Money_in: Money_in[0] 1z³, Money_in[1] 2z³, Money_in[2] 5 z³ ???
 //BTN1: product1 - tea, BTN2: product2 - coffee, BTN3: product3 - hot chocolate
 //Price: tea: 2z³, coffee: 3z³, hot chocolate: 5z³
 
@@ -42,13 +42,15 @@ assign LED1 = BTN1;
 assign LED2 = BTN2;
 assign LED3 = BTN3;
 
+
+
 reg [7:0] insertedMoney;
 reg [7:0] totalChange;
 reg [7:0] change;
 
 reg [1:0] current_state, next_state;
 
-parameter free_state = 0, initial_state=1,tea_0=2, coffee_0=3, hot_chocolate_0=4, delivered_state=5;
+parameter free_state = 0, initial_state=1,tea_0=2, coffee_0=3, hot_chocolate_0=4, moreMoney_state = 5, delivered_state=6;
    
 //*****************************************************************************
 
@@ -72,13 +74,13 @@ begin
     else begin
        if (current_state != initial_state)
        begin
-           if (Money_in == 1 ) insertedMoney = 8'b00000001;
-           else if (Money_in == 2) insertedMoney = 8'b00000010;
-           else if (Money_in == 3) insertedMoney = 8'b00000011;
-           else if (Money_in == 4) insertedMoney = 8'b00000100;
-           else if (Money_in == 5) insertedMoney = 8'b00000101;
-           else if (Money_in == 6) insertedMoney = 8'b00000110;
-           else if (Money_in == 7) insertedMoney = 8'b00000111;
+           if (Money_in == 3'b001) insertedMoney = insertedMoney + 8'b00000001;        //1z³
+           else if (Money_in == 3'b010) insertedMoney = insertedMoney + 8'b00000010;   //2zl
+          // else if (Money_in == 3) insertedMoney = insertedMoney + 8'b00000011;
+           //else if (Money_in == 4) insertedMoney = insertedMoney + 8'b00000100;
+           else if (Money_in == 3'b100) insertedMoney = insertedMoney + 8'b00000101;  //5z³
+           //else if (Money_in == 6) insertedMoney = 8'b00000110;
+           //else if (Money_in == 7) insertedMoney = 8'b00000111;
        end
        current_state <= next_state;
        totalChange <= totalChange + change;
@@ -124,7 +126,22 @@ begin
          begin
            digit0 = 7'b0001111;
            digit1 = 7'b1111110;
+         end
+       else if (insertedMoney == 8'b00001000)   //8
+         begin
+           digit0 = 7'b0000000;
+           digit1 = 7'b1111110;
        end
+       else if (insertedMoney == 8'b00001001)   //9
+         begin
+           digit0 = 7'b0001100;
+           digit1 = 7'b1111110;
+         end
+       else if (insertedMoney == 8'b00000111)   //10
+          begin
+             digit0 = 7'b1001111;
+             digit1 = 7'b0000001;
+          end
     end
 else begin                        //money refunded
    digit0 = 7'b1111110;
@@ -171,7 +188,7 @@ case (current_state)
 initial_state: begin
               delivered = 0;
               change = 8'b000000000;
-              if (BTN1 ==1 ) begin
+              if (BTN1 == 1 ) begin
                   product1 = 1;
                   product2 = 0;
                   product3 = 0;
@@ -187,10 +204,10 @@ initial_state: begin
                   product1 = 0;
                   product2 = 0;
                   product3 = 1;
-                  next_state <= hot_chocolate_0;
+                  next_state = hot_chocolate_0;
                   end
               else begin
-                  next_state <= initial_state;
+                  next_state = initial_state;
                   end
               end    
               
@@ -203,6 +220,14 @@ tea_0: begin
            //delivered = 1;
            change = insertedMoney - 2;
            next_state = delivered_state;
+           end
+      else if (insertedMoney < 2) begin
+           product1 = 1;
+           product2 = 0;
+           product3 = 0;
+           delivered = 0;
+           change = 8'b00000000;
+           next_state = moreMoney_state;
            end
        else begin
            product1 = 1;
@@ -223,7 +248,15 @@ coffee_0: begin
            change = insertedMoney - 3;
            next_state = delivered_state;
            end
-       else begin
+       else if (insertedMoney < 3) begin
+            product1 = 0;
+            product2 = 1;
+            product3 = 0;
+            delivered = 0;
+            change = 8'b00000000;
+            next_state = moreMoney_state;
+           end
+       else begin   // 
            product1 = 0;
            product2 = 1;
            product3 = 0;
@@ -241,6 +274,14 @@ hot_chocolate_0: begin
              change = insertedMoney - 5;
              next_state = delivered_state;
              end
+          else if (insertedMoney < 5) begin
+             product1 = 0;
+             product2 = 0;
+             product3 = 1;
+             delivered = 0;
+             change = 8'b00000000;
+             next_state = moreMoney_state;
+             end
           else begin
              product1 = 0;
              product2 = 0;
@@ -250,7 +291,13 @@ hot_chocolate_0: begin
              next_state = hot_chocolate_0;
              end
          end       
-         
+moreMoney_state: begin
+          delivered = 0;
+          change = 8'b00000000;
+          if (product1 == 1) next_state = tea_0;
+          else if (product2 == 1) next_state = coffee_0;
+          else if (product3 == 1) next_state = hot_chocolate_0;
+          end         
 delivered_state: begin
           next_state = delivered_state;
           change = 8'b00000000;
