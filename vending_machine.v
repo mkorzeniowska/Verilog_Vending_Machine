@@ -26,7 +26,7 @@ module vending_machine(clk, reset, BTN1, BTN2, BTN3, Money_in, product1, product
 input clk;     //internal clock (50MHz)
 input reset;   //reset variable
 input BTN1, BTN2, BTN3;    
-input Money_in;
+input [2:0] Money_in;                    //3-bit Money_in: Money_in[0] 1z³, Money_in[1] 2z³, Money_in[2] 5 z³ ???
 //BTN1: product1 - tea, BTN2: product2 - coffee, BTN3: product3 - hot chocolate
 //Price: tea: 2z³, coffee: 3z³, hot chocolate: 5z³
 
@@ -41,6 +41,8 @@ output LED1, LED2, LED3;   //LEDs showing which product was selected
 assign LED1 = BTN1;
 assign LED2 = BTN2;
 assign LED3 = BTN3;
+
+
 
 reg [7:0] insertedMoney;
 reg [7:0] totalChange;
@@ -72,13 +74,13 @@ begin
     else begin
        if (current_state != initial_state)
        begin
-           if (Money_in == 1 ) insertedMoney = 8'b00000001;
-           else if (Money_in == 2) insertedMoney = 8'b00000010;
-           else if (Money_in == 3) insertedMoney = 8'b00000011;
-           else if (Money_in == 4) insertedMoney = 8'b00000100;
-           else if (Money_in == 5) insertedMoney = 8'b00000101;
-           else if (Money_in == 6) insertedMoney = 8'b00000110;
-           else if (Money_in == 7) insertedMoney = 8'b00000111;
+           if (Money_in[0]) insertedMoney = insertedMoney + 8'b00000001;        
+           else if (Money_in[1]) insertedMoney = insertedMoney + 8'b00000010;
+          // else if (Money_in == 3) insertedMoney = insertedMoney + 8'b00000011;
+           //else if (Money_in == 4) insertedMoney = insertedMoney + 8'b00000100;
+           else if (Money_in[2]) insertedMoney = insertedMoney + 8'b00000101;
+           //else if (Money_in == 6) insertedMoney = 8'b00000110;
+           //else if (Money_in == 7) insertedMoney = 8'b00000111;
        end
        current_state <= next_state;
        totalChange <= totalChange + change;
@@ -124,7 +126,22 @@ begin
          begin
            digit0 = 7'b0001111;
            digit1 = 7'b1111110;
+         end
+       else if (insertedMoney == 8'b00001000)   //8
+         begin
+           digit0 = 7'b0000000;
+           digit1 = 7'b1111110;
        end
+       else if (insertedMoney == 8'b00001001)   //9
+         begin
+           digit0 = 7'b0001100;
+           digit1 = 7'b1111110;
+         end
+       else if (insertedMoney == 8'b00000111)   //10
+          begin
+             digit0 = 7'b1001111;
+             digit1 = 7'b0000001;
+          end
     end
 else begin                        //money refunded
    digit0 = 7'b1111110;
@@ -171,7 +188,7 @@ case (current_state)
 initial_state: begin
               delivered = 0;
               change = 8'b000000000;
-              if (BTN1 ==1 ) begin
+              if (BTN1 == 1 ) begin
                   product1 = 1;
                   product2 = 0;
                   product3 = 0;
