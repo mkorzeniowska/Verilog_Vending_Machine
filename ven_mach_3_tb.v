@@ -20,20 +20,28 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 `define clk_period 10
+`include "Vending_Machine.v"
+`include "debouncer.v"
+`include "ssd.v"
+`include "clk_divider.v"
+
 
 module Vending_Machine_tb();
 
 reg clk, reset, BTN1, BTN2, BTN3;
 reg [2:0]Money_in;
 wire product1, product2, product3, delivered;
+wire a,b,c,d,e,f,g,an0,an1,an2,an3;
 wire LED1, LED2, LED3;
 wire [6:0]digit0;
 wire [6:0]digit1;
 wire [6:0]digit2; 
 wire [6:0]digit3;
+wire divClk;
+wire BTN1out, BTN2out, BTN3out;
 
 
-Vending_Machine VM(
+Vending_Machine_Board VM(
                  .clk(clk), 
                  .reset(reset), 
                  .BTN1(BTN1), 
@@ -44,13 +52,7 @@ Vending_Machine VM(
                  .product2(product2), 
                  .product3(product3), 
                  .delivered(delivered),
-                 .LED1(LED1), 
-                 .LED2(LED2), 
-                 .LED3(LED3), 
-                 .digit0(digit0), 
-                 .digit1(digit1), 
-                 .digit2(digit2), 
-                 .digit3(digit3)
+                 .a(a),.b(b),.c(c),.d(d),.e(e),.f(f),.g(g),.an0(an0),.an1(an1),.an2(an2),.an3(an3)
                   );
 
 
@@ -111,7 +113,7 @@ parameter free_state = 0, initial_state=1,tea_0=2, coffee_0=3, hot_chocolate_0=4
                     //tea with change
  //********************************************************************
       BTN1 = 1;       
-      # 100 Money_in = 3'b100;        //5zl   
+      # 100 Money_in = 3'b101;        //5zl   
       #(`clk_period);         
  
       #(`clk_period *5);
@@ -131,6 +133,7 @@ parameter free_state = 0, initial_state=1,tea_0=2, coffee_0=3, hot_chocolate_0=4
       
       $finish;
       end
-
+initial 
+$monitor ($time, " Output for inserted money = %h and change = %h ", digit0, digit3);
 endmodule
 
