@@ -13,10 +13,10 @@
 //						for the 4 digits on the board. It's inputs are not directly the binary numbers.
 //						You need to convert 4-bit hex values to their seven segment display equivalents.
 //						 
-//						a0,b0,c0,d0,e0,f0,g0 belongs to digit0, rigth most digit on the board.
-//						a1,b1,c1,d1,e1,f1,g1 belongs to digit1, 2. from the rigth digit on the board.
-//						a2,b2,c2,d2,e2,f2,g2 belongs to digit2, 3. from the rigth digit on the board.
-//						a3,b3,c3,d3,e3,f3,g3 belongs to digit3, left most digit on the board.	
+//						a0,b0,c0,d0,e0,f0,g0 belongs to digit0, left most digit on the board.
+//						a1,b1,c1,d1,e1,f1,g1 belongs to digit1, 3. from the rigth digit on the board.
+//						a2,b2,c2,d2,e2,f2,g2 belongs to digit2, 2. from the rigth digit on the board.
+//						a3,b3,c3,d3,e3,f3,g3 belongs to digit3, right most digit on the board.	
 // 
 // Dependencies: 
 // 
@@ -59,9 +59,6 @@ module ssd( clk, reset, a0, a1, a2, a3, b0, b1, b2, b3, c0, c1, c2, c3, d0, d1, 
      
     //in this always block we give the inputs to the leds by choosing 
     //different display segment in each time
-    //!(In the button-pin sheet of the Basys, the 7-SEG numbers are assinged wrong.
-    //To avoid confusion we corrected it while choosing an0,an1... So if you just enter
-    //pin numbers according to the sheet it will work fine.)
     always @(posedge clk) 
     begin
           if (reset)       //if reset initilize the outputs
@@ -83,14 +80,14 @@ module ssd( clk, reset, a0, a1, a2, a3, b0, b1, b2, b3, c0, c1, c2, c3, d0, d1, 
           an0 <= 1;
           an1 <= 1;
           an2 <= 1;
-          an3 <= 1;
-          a <= 0;
-          b <= 0;
-          c <= 0;
-          d <= 0;
-          e <= 0;
-          f <= 0;
-          g <= 0;
+          an3 <= 0;
+          a <= a0;
+          b <= b0;
+          c <= c0;
+          d <= d0;
+          e <= e0;
+          f <= f0;
+          g <= g0;
           end
           else if (state == 3'b010)    //state 2 gives the led outputs to the AN1
           begin
