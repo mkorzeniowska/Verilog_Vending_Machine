@@ -77,11 +77,7 @@ begin
        begin
            if (Money_in == 3'b001) begin insertedMoney <= insertedMoney + 1;  end      //1z³
            else if (Money_in == 3'b010) begin insertedMoney = insertedMoney + 2; end   //2zl
-          // else if (Money_in == 3) insertedMoney = insertedMoney + 8'b00000011;
-           //else if (Money_in == 4) insertedMoney = insertedMoney + 8'b00000100;
-           else if (Money_in == 3'b100) begin insertedMoney = insertedMoney + 5; end //5z³
-           //else if (Money_in == 6) insertedMoney = 8'b00000110;
-           //else if (Money_in == 7) insertedMoney = 8'b00000111;
+           else if (Money_in == 3'b101) begin insertedMoney = insertedMoney + 5; end   //5z³
        end
        current_state <= next_state;
        totalChange <= totalChange + change;
@@ -199,16 +195,16 @@ initial_state: begin
                   product1 = 0;
                   product2 = 1;
                   product3 = 0;
-                  next_state = coffee_0;
+                  next_state <= coffee_0;
                   end
               else if (BTN3 == 1) begin
                   product1 = 0;
                   product2 = 0;
                   product3 = 1;
-                  next_state = hot_chocolate_0;
+                  next_state <= hot_chocolate_0;
                   end
               else begin
-                  next_state = initial_state;
+                  next_state <= initial_state;
                   end
               end    
               
