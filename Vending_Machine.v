@@ -19,7 +19,7 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-module Vending_Machine(clk, reset, BTN1, BTN2, BTN3, Money_in, product1, product2, product3, delivered, 
+module Vending_Machine(clk, reset, BTN1, BTN2, BTN3, Money_in, product1, product2, product3, delivered, Money_out,
                        LED1, LED2, LED3, digit0, digit1, digit2, digit3
                        );
 input clk;     //internal clock (50MHz)  czyli 50 mln operacji w 1s
@@ -30,6 +30,9 @@ input [2:0] Money_in;                    //3-bit Money_in: Money_in[0] 1z³, Mone
 //Price: tea: 2z³, coffee: 3z³, hot chocolate: 5z³
 
 output reg product1, product2, product3, delivered;
+output reg [2:0]Money_out;
+
+
 output reg [6:0] digit0; 
 output reg [6:0] digit1;
 output reg [6:0] digit2;
@@ -42,7 +45,7 @@ assign LED2 = BTN2;
 assign LED3 = BTN3;
 
 
-wire [2:0] Money_in;
+wire [2:0] Money_in;            
 reg [7:0] insertedMoney;
 reg [7:0] totalChange;
 reg [7:0] change;
@@ -61,7 +64,6 @@ begin
        current_state <= initial_state;
        insertedMoney <= 8'b000000000;
        totalChange <= 8'b00000000;
-       //money = 8'b0000000;
        change <= 8'b00000000;
        digit0<=7'b1111110;
        digit1<=7'b1111110;
@@ -70,7 +72,7 @@ begin
        product1<=0;
        product2<=0;
        product3<=0;
-       delivered<=0;    
+       delivered<=0;   
     end
     else begin
        if (current_state != initial_state)
@@ -81,6 +83,7 @@ begin
        end
        current_state <= next_state;
        totalChange <= totalChange + change;
+       Money_out <= totalChange;
 
     if (current_state != delivered_state)     //display inserted money
     begin
@@ -216,7 +219,7 @@ tea_0: begin
            product3 = 0;
            //delivered = 1;
            change = insertedMoney - 2;
-           next_state = delivered_state;
+           next_state <= delivered_state;
            end
       else if (insertedMoney < 2) begin
            product1 = 1;
@@ -224,7 +227,7 @@ tea_0: begin
            product3 = 0;
            delivered = 0;
            change = 8'b00000000;
-           next_state = moreMoney_state;
+           next_state <= moreMoney_state;
            end
        else begin                     // If it did not make any choice keep your position
            product1 = 1;
@@ -232,7 +235,7 @@ tea_0: begin
            product3 = 0;
            delivered = 0;
            change = 8'b00000000;
-           next_state = tea_0;
+           next_state <= tea_0;
            end
        end
        
@@ -242,8 +245,8 @@ coffee_0: begin
            product2 = 1;
            product3 = 0;
            //delivered = 1;
-           change = insertedMoney - 3;
-           next_state = delivered_state;
+           change <= insertedMoney - 3;
+           next_state <= delivered_state;
            end
        else if (insertedMoney < 3) begin
             product1 = 0;
@@ -251,7 +254,7 @@ coffee_0: begin
             product3 = 0;
             delivered = 0;
             change = 8'b00000000;
-            next_state = moreMoney_state;
+            next_state <= moreMoney_state;
            end
        else begin   // 
            product1 = 0;
@@ -259,7 +262,7 @@ coffee_0: begin
            product3 = 0;
            delivered = 0;
            change = 8'b00000000;
-           next_state = coffee_0;
+           next_state <= coffee_0;
            end
        end
 hot_chocolate_0: begin
@@ -269,7 +272,7 @@ hot_chocolate_0: begin
              product3 = 1;
              //delivered = 1;
              change = insertedMoney - 5;
-             next_state = delivered_state;
+             next_state <= delivered_state;
              end
           else if (insertedMoney < 5) begin
              product1 = 0;
@@ -277,7 +280,7 @@ hot_chocolate_0: begin
              product3 = 1;
              delivered = 0;
              change = 8'b00000000;
-             next_state = moreMoney_state;
+             next_state <= moreMoney_state;
              end
           else begin
              product1 = 0;
@@ -285,20 +288,22 @@ hot_chocolate_0: begin
              product3 = 1;
              delivered = 0;
              change = 8'b00000000;
-             next_state = hot_chocolate_0;
+             next_state <= hot_chocolate_0;
              end
          end       
 moreMoney_state: begin
           delivered = 0;
           change = 8'b00000000;
-          if (product1 == 1) next_state = tea_0;
-          else if (product2 == 1) next_state = coffee_0;
-          else if (product3 == 1) next_state = hot_chocolate_0;
+          if (product1 == 1) next_state <= tea_0;
+          else if (product2 == 1) next_state <= coffee_0;
+          else if (product3 == 1) next_state <= hot_chocolate_0;
           end         
 delivered_state: begin
           change = 8'b00000000;
           delivered = 1;
-          next_state = delivered_state;
+          Money_out = totalChange;
+          //if (product1 == 1 ) begin ;end
+          next_state <= delivered_state;
           end
 endcase
 end

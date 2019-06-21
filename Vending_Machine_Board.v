@@ -18,16 +18,17 @@
 // Additional Comments:
 // 
 //////////////////////////////////////////////////////////////////////////////////
-module Vending_Machine_Board(clk, reset, BTN1 ,BTN2 ,BTN3,Money_in, product1, product2, product3, delivered,
+module Vending_Machine_Board(clk, reset, BTN1 ,BTN2 ,BTN3,Money_in, product1, product2, product3, delivered, Money_out,
 							 a,b,c,d,e,f,g,an0,an1,an2,an3);
 	
 	input clk, reset, BTN1, BTN2, BTN3, Money_in;		
-	output product1, product2, product3, delivered;
+	output product1, product2, product3, delivered, Money_out;
 	output a,b,c,d,e,f,g,an0,an1,an2,an3;
 
 	wire divClk;
 	wire BTN1out, BTN2out, BTN3out;
 	wire [2:0] Money_in;
+	wire [2:0] Money_out;
 	wire [6:0] digit0;
 	wire [6:0] digit1;
 	wire [6:0] digit2;
@@ -41,7 +42,7 @@ module Vending_Machine_Board(clk, reset, BTN1 ,BTN2 ,BTN3,Money_in, product1, pr
 	debouncer 	DB3 (.clk(divClk), .rst(reset), .noisy_in(BTN3), .clean_out(BTN3out));
 	
 	Vending_Machine vending (.clk(divClk), .reset(reset), .BTN1(BTN1out), .BTN2(BTN2out), .BTN3(BTN3out), .Money_in(Money_in), 
-							 .product1(product1), .product2(product2), .product3(product3), .delivered(delivered), .LED1(LED1),
+							 .product1(product1), .product2(product2), .product3(product3), .delivered(delivered),.Money_out(Money_out), .LED1(LED1),
 							 .LED2(LED2), .LED3(LED3),
 							 .digit0(digit0), .digit1(digit1), .digit2(digit2), .digit3(digit3));
 	
