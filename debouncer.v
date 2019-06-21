@@ -3,7 +3,7 @@
 // Company: 
 // Engineer: 
 // 
-// Create Date: 17.06.2019 14:53:39
+// Create Date: 20.06.2019 18:01:23
 // Design Name: 
 // Module Name: debouncer
 // Project Name: 
@@ -18,7 +18,6 @@
 // Additional Comments:
 // 
 //////////////////////////////////////////////////////////////////////////////////
-
 
 module debouncer(
     input clk,

@@ -40,7 +40,7 @@ module Vending_Machine_Board(clk, reset, BTN1 ,BTN2 ,BTN3,Money_in, product1, pr
 	debouncer 	DB2 (.clk(divClk), .rst(reset), .noisy_in(BTN2), .clean_out(BTN2out));
 	debouncer 	DB3 (.clk(divClk), .rst(reset), .noisy_in(BTN3), .clean_out(BTN3out));
 	
-	vending_machine vending (.clk(divClk), .reset(reset), .BTN1(BTN1out), .BTN2(BTN2out), .BTN3(BTN3out), .Money_in(Money_in), 
+	Vending_Machine vending (.clk(divClk), .reset(reset), .BTN1(BTN1out), .BTN2(BTN2out), .BTN3(BTN3out), .Money_in(Money_in), 
 							 .product1(product1), .product2(product2), .product3(product3), .delivered(delivered), .LED1(LED1),
 							 .LED2(LED2), .LED3(LED3),
 							 .digit0(digit0), .digit1(digit1), .digit2(digit2), .digit3(digit3));
